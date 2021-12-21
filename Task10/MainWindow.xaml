@@ -6,7 +6,42 @@
         xmlns:local="clr-namespace:Task10"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
 
+    <Window.Resources>
+        <HierarchicalDataTemplate x:Key="fileTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Path=name}" Grid.Column="0"/>
+                <TextBlock Text="TEEEST" Grid.Column="1"/>
+            </Grid>
+        </HierarchicalDataTemplate>
+
+        <HierarchicalDataTemplate x:Key="folderTemplate">
+            <TreeViewItem Header="{Binding Path=name}" >
+                <TreeViewItem Header="FILES" ItemsSource="{Binding Path=files}"
+                    ItemTemplate="{StaticResource fileTemplate}"/>
+            </TreeViewItem>
+        </HierarchicalDataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Content="Analyze" Click="Analyze" Margin="5"/>
+            <Button Content="Select Folder" Click="SelectFolder" Margin="5"/>
+            <TextBlock x:Name="FileURL" Margin="5"/>
+        </StackPanel>
+
+        <TreeView Grid.Row="1" Name="DirectoryTree"
+                  ItemTemplate="{StaticResource folderTemplate}">
+            
+        </TreeView>
     </Grid>
 </Window>
