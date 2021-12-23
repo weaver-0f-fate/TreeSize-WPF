@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Task10" 
+        xmlns:local="clr-namespace:Task10"
+        xmlns:models="clr-namespace:Models;assembly=Models"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-
 
     <Grid>
         <Grid.RowDefinitions>
@@ -20,16 +20,29 @@
             <TextBlock Margin="5" Text="{Binding SelectedFolderPath, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
-        <TreeView Grid.Row="1" ItemsSource="{Binding Records}">
+        <TreeView Grid.Row="1" DataContext="{Binding Path=RootDirectory, UpdateSourceTrigger=PropertyChanged}"
+                  ItemsSource="{Binding NestedItems}">
+
             <TreeView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock/>
-                        <TextBlock/>
-                        <TextBlock/>
+                <HierarchicalDataTemplate ItemsSource="{Binding Path=NestedItems}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Name="Icon" Width="20" Height="20"/>
+                        <TextBlock Text="{Binding Path=Name}"/>
+                        <TextBlock Text=" | "/>
+                        <TextBlock Text="{Binding Path=Size}"/>
+                        <TextBlock Text=" Bytes"/>
                     </StackPanel>
-                </DataTemplate>
+                    <HierarchicalDataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Type}" Value="Folder">
+                            <Setter TargetName="Icon" Property="Source" Value="/folderImage.png"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Type}" Value="File">
+                            <Setter TargetName="Icon" Property="Source" Value="/fileImage.png"/>
+                        </DataTrigger>
+                    </HierarchicalDataTemplate.Triggers>
+                </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
+            
         </TreeView>
     </Grid>
 </Window>

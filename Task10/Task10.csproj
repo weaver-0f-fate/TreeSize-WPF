@@ -8,11 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="fileImage.png" />
+    <None Remove="folderImage.png" />
+  </ItemGroup>
+
+  <ItemGroup>
 	<ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CustomControls\" />
+    <Resource Include="fileImage.png" />
+    <Resource Include="folderImage.png" />
   </ItemGroup>
 
 </Project>

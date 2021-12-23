@@ -1,13 +1,15 @@
-﻿using System.ComponentModel;
+﻿using Models;
+using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using ViewModels.Commands;
 
 namespace ViewModels {
     public class ApplicationViewModel : INotifyPropertyChanged {
-
-
+        private FolderFile _rootDirectory;
         private string _selectedFolderPath;
+
         public string SelectedFolderPath {
             get {
                 return _selectedFolderPath;
@@ -18,7 +20,15 @@ namespace ViewModels {
             } 
         }
 
-
+        public FolderFile RootDirectory {
+            get {
+                return _rootDirectory;
+            }
+            set {
+                _rootDirectory = value;
+                OnPropertyChanged("RootDirectory");
+            }
+        }
 
         #region Commands
         private RelayCommand _selectFolderCommand;
@@ -37,8 +47,12 @@ namespace ViewModels {
         private RelayCommand _analyzeFolderCommand;
         public RelayCommand AnalyzeFolderCommand {
             get {
-                return _analyzeFolderCommand ??= new RelayCommand(x => { 
-                        //TODO analyzeCommand logic
+                return _analyzeFolderCommand ??= new RelayCommand(x => {
+                        var info = new DirectoryInfo(SelectedFolderPath);
+                        RootDirectory = new FolderFile(info);
+                    },
+                    x => {
+                        return _selectedFolderPath is not null;
                     });
             }
         }
@@ -53,34 +67,3 @@ namespace ViewModels {
         }
     }
 }
-/*
- private void Analyze(object sender, RoutedEventArgs e) {
-            if (_selectedFolderPath is null) {
-                return;
-            }
-
-            ListDirectory(_selectedFolderPath);
-        }
-
-        private void ListDirectory(string path) {
-            DirectoryTree.Items.Clear();
-            var rootDirectoryInfo = new DirectoryInfo(path);
-            DirectoryTree.Items.Add(CreateDirectoryNode(rootDirectoryInfo));
-        }
-
-        private static TreeViewItem CreateDirectoryNode(DirectoryInfo directoryInfo) {
-            var directoryNode = new TreeViewItem { Header = directoryInfo.Name };
-
-
-            foreach (var directory in directoryInfo.GetDirectories()) {
-                directoryNode.Items.Add(CreateDirectoryNode(directory));
-            }
-
-            foreach (var file in directoryInfo.GetFiles()) {
-                directoryNode.Items.Add(new TreeViewItem() { Header = new TreeItem(file) });
-            }
-
-            return directoryNode;
-
-        }
- */
