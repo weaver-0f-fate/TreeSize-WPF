@@ -4,12 +4,15 @@
 	<OutputType>WinExe</OutputType>
 	<TargetFramework>net5.0-windows</TargetFramework>
 	<UseWPF>true</UseWPF>
-	<UseWindowsForms>true</UseWindowsForms>
 	<StartupObject>Task10.App</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
 	<ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="CustomControls\" />
   </ItemGroup>
 
 </Project>

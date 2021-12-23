@@ -3,29 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Task10"
+        xmlns:local="clr-namespace:Task10" 
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
-    <Window.Resources>
-        <HierarchicalDataTemplate x:Key="fileTemplate">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding Path=name}" Grid.Column="0"/>
-                <TextBlock Text="TEEEST" Grid.Column="1"/>
-            </Grid>
-        </HierarchicalDataTemplate>
-
-        <HierarchicalDataTemplate x:Key="folderTemplate">
-            <TreeViewItem Header="{Binding Path=name}" >
-                <TreeViewItem Header="FILES" ItemsSource="{Binding Path=files}"
-                    ItemTemplate="{StaticResource fileTemplate}"/>
-            </TreeViewItem>
-        </HierarchicalDataTemplate>
-    </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -34,14 +15,21 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Content="Analyze" Click="Analyze" Margin="5"/>
-            <Button Content="Select Folder" Click="SelectFolder" Margin="5"/>
-            <TextBlock x:Name="FileURL" Margin="5"/>
+            <Button Content="Analyze" Margin="5" Command="{Binding AnalyzeFolderCommand}"/>
+            <Button Content="Select Folder" Margin="5" Command="{Binding SelectFolderCommand}"/>
+            <TextBlock Margin="5" Text="{Binding SelectedFolderPath, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
-        <TreeView Grid.Row="1" Name="DirectoryTree"
-                  ItemTemplate="{StaticResource folderTemplate}">
-            
+        <TreeView Grid.Row="1" ItemsSource="{Binding Records}">
+            <TreeView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock/>
+                        <TextBlock/>
+                        <TextBlock/>
+                    </StackPanel>
+                </DataTemplate>
+            </TreeView.ItemTemplate>
         </TreeView>
     </Grid>
 </Window>
