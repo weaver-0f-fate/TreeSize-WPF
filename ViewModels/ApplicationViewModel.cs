@@ -7,7 +7,7 @@ using ViewModels.Commands;
 
 namespace ViewModels {
     public class ApplicationViewModel : INotifyPropertyChanged {
-        private FolderFile _rootDirectory;
+        private SystemFile _rootDirectory;
         private string _selectedFolderPath;
 
         public string SelectedFolderPath {
@@ -20,7 +20,7 @@ namespace ViewModels {
             } 
         }
 
-        public FolderFile RootDirectory {
+        public SystemFile RootDirectory {
             get {
                 return _rootDirectory;
             }
@@ -49,7 +49,7 @@ namespace ViewModels {
             get {
                 return _analyzeFolderCommand ??= new RelayCommand(x => {
                         var info = new DirectoryInfo(SelectedFolderPath);
-                        RootDirectory = new FolderFile(info);
+                        RootDirectory = new SystemFile(info);
                     },
                     x => {
                         return _selectedFolderPath is not null;
