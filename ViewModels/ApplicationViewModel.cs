@@ -47,9 +47,9 @@ namespace ViewModels {
         private RelayCommand _analyzeFolderCommand;
         public RelayCommand AnalyzeFolderCommand {
             get {
-                return _analyzeFolderCommand ??= new RelayCommand(x => {
+                return _analyzeFolderCommand ??= new RelayCommand(async x => {
                         var info = new DirectoryInfo(SelectedFolderPath);
-                        RootDirectory = new SystemFile(info);
+                        RootDirectory = await SystemFile.GetSystemFile(info);
                     },
                     x => {
                         return _selectedFolderPath is not null;
