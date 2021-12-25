@@ -5,8 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Models {
-    public enum FileType {
-        Folder,
-        File
+    public class Enums {
+        public enum FileType {
+            Folder,
+            File
+        }
     }
 }

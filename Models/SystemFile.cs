@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Models {
     public class SystemFile : INotifyPropertyChanged{
         private string _name;
-        private long _size;
+        private Size _size;
 
         #region Properties
         public string Name {
@@ -21,20 +21,20 @@ namespace Models {
             }
         }
 
-        public long Size {
+        public Size Size {
             get { return _size; }
             set {
                 _size = value;
                 OnPropertyChanged("Size");
             }
         }
-        public FileType Type { get; }
+        public Enums.FileType Type { get; }
         public ObservableCollection<SystemFile> NestedItems { get; set; }
         #endregion
 
-        private SystemFile(string name, long size, FileType type, ObservableCollection<SystemFile> collection) {
+        private SystemFile(string name, double size, Enums.FileType type, ObservableCollection<SystemFile> collection) {
             Name = name;
-            Size = size;
+            Size = new Size(size);
             Type = type;
             NestedItems = collection;
         }
@@ -43,38 +43,33 @@ namespace Models {
         public static async Task<SystemFile> GetSystemFile(FileSystemInfo fileInfo) {
 
             if (fileInfo is DirectoryInfo directoryInfo) {
-                List<Task<SystemFile>> tasks = new List<Task<SystemFile>>();
+                var list = new ObservableCollection<SystemFile>();
+                double size = 0;
 
 
                 foreach (var directory in directoryInfo.GetDirectories()) {
-                    tasks.Add(GetSystemFile(directory));
+                    var dir = await GetSystemFile(directory);
+                    size += dir.Size.Amount;
+                    list.Add(dir);
                 }
                 
 
                 foreach (var systemFile in directoryInfo.GetFiles()) {
-                    tasks.Add(GetSystemFile(systemFile));
+                    var file = await GetSystemFile(systemFile);
+                    size += file.Size.Amount;
+                    list.Add(file);
                 }
-
-
-                var results = await Task.WhenAll(tasks);
-                var list = new ObservableCollection<SystemFile>(results);
-
-
-                long size = 0;
-                foreach (var i in list) {
-                    size += i.Size;
-                }
-
-
-                return new SystemFile(fileInfo.Name, size, FileType.Folder, list);
+                return new SystemFile(fileInfo.Name, size, Enums.FileType.Folder, list);
             }
             
-            if (fileInfo is FileInfo file) {
-                return new SystemFile(file.Name, file.Length, FileType.File, new ObservableCollection<SystemFile>());
+            if (fileInfo is FileInfo f) {
+                return new SystemFile(f.Name, f.Length, Enums.FileType.File, new ObservableCollection<SystemFile>());
             }
 
             throw new Exception();
         }
+
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "") {

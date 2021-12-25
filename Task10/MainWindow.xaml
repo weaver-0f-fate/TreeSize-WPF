@@ -29,9 +29,9 @@
                         <Image Name="Icon" Width="20" Height="20"/>
                         <TextBlock Text="{Binding Path=Name}"/>
                         <TextBlock Text=" | "/>
-                        <TextBlock Text="{Binding Path=Size}"/>
-                        <TextBlock Text=" Bytes"/>
+                        <TextBlock Text="{Binding Path=Size.Text}"/>
                     </StackPanel>
+                    
                     <HierarchicalDataTemplate.Triggers>
                         <DataTrigger Binding="{Binding Type}" Value="Folder">
                             <Setter TargetName="Icon" Property="Source" Value="/folderImage.png"/>
