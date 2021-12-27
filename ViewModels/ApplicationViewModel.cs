@@ -1,4 +1,5 @@
 ﻿using Models;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -9,7 +10,7 @@ using ViewModels.Commands;
 
 namespace ViewModels {
     public class ApplicationViewModel : INotifyPropertyChanged {
-        private SystemFile _rootDirectory;
+        private SystemFileViewModel _rootDirectory;
         private string _selectedFolderPath;
         private bool _inProgress = false;
 
@@ -24,7 +25,7 @@ namespace ViewModels {
             }
         }
 
-        public SystemFile RootDirectory {
+        public SystemFileViewModel RootDirectory {
             get {
                 return _rootDirectory;
             }
@@ -70,8 +71,9 @@ namespace ViewModels {
         private async Task GetFilesCommandAsync() {
             InProgress = true;
             RootDirectory = null;
+            GC.Collect();
             var info = new DirectoryInfo(SelectedFolderPath);
-            RootDirectory = await Task.Run(() => SystemFile.GetSystemFileAsync(info));
+            RootDirectory = await Task.Run(() => SystemFileViewModel.GetSystemFileViewModelAsync(info));
             InProgress = false;
         }
         private bool CanExecute(object parameter) {
