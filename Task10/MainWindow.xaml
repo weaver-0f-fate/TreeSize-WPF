@@ -11,7 +11,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal">
@@ -20,7 +21,11 @@
             <TextBlock Margin="5" Text="{Binding SelectedFolderPath, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
-        <TreeView Grid.Row="1" DataContext="{Binding Path=RootDirectory, UpdateSourceTrigger=PropertyChanged}"
+
+        <ProgressBar Height="20" Grid.Row="1" 
+                     IsIndeterminate="True" IsEnabled="False"/>
+
+        <TreeView Grid.Row="2" DataContext="{Binding Path=RootDirectory, UpdateSourceTrigger=PropertyChanged}"
                   ItemsSource="{Binding NestedItems}">
 
             <TreeView.ItemTemplate>

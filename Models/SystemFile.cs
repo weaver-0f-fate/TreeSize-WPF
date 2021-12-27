@@ -19,7 +19,7 @@ namespace Models {
         }
 
 
-        public static async Task<SystemFile> GetSystemFile(FileSystemInfo fileInfo) {
+        public static async Task<SystemFile> GetSystemFileAsync(FileSystemInfo fileInfo) {
 
             try {
                 if (fileInfo is DirectoryInfo directoryInfo) {
@@ -29,7 +29,7 @@ namespace Models {
 
                     foreach (var directory in directoryInfo.GetDirectories()) {
                         try {
-                            var dir = await GetSystemFile(directory);
+                            var dir = await GetSystemFileAsync(directory);
                             size += dir.Size.Amount;
                             list.Add(dir);
                         }
@@ -40,7 +40,7 @@ namespace Models {
 
 
                     foreach (var systemFile in directoryInfo.GetFiles()) {
-                        var file = await GetSystemFile(systemFile);
+                        var file = await GetSystemFileAsync(systemFile);
                         size += file.Size.Amount;
                         list.Add(file);
                     }

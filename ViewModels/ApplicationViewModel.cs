@@ -2,13 +2,16 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Input;
 using ViewModels.Commands;
 
 namespace ViewModels {
     public class ApplicationViewModel : INotifyPropertyChanged {
         private SystemFile _rootDirectory;
         private string _selectedFolderPath;
+        private bool _inProcess = false;
 
         public string SelectedFolderPath {
             get {
@@ -31,8 +34,8 @@ namespace ViewModels {
         }
 
         #region Commands
-        private RelayCommand _selectFolderCommand;
-        public RelayCommand SelectFolderCommand {
+        private ICommand _selectFolderCommand;
+        public ICommand SelectFolderCommand {
             get {
                 return _selectFolderCommand ??= new RelayCommand(x => {
                         using var folderDialog = new FolderBrowserDialog();
@@ -44,17 +47,22 @@ namespace ViewModels {
             }
         }
 
-        private RelayCommand _analyzeFolderCommand;
-        public RelayCommand AnalyzeFolderCommand {
+        private IAsyncCommand _analyzeFolderCommand;
+        public IAsyncCommand AnalyzeFolderCommand {
             get {
-                return _analyzeFolderCommand ??= new RelayCommand(async x => {
-                        var info = new DirectoryInfo(SelectedFolderPath);
-                        RootDirectory = await SystemFile.GetSystemFile(info);
-                    },
-                    x => {
-                        return _selectedFolderPath is not null;
-                    });
+                return _analyzeFolderCommand ??= new BaseAsyncCommand(GetFilesCommandAsync, CanExecute);
             }
+        }
+
+        private async Task GetFilesCommandAsync() {
+            _inProcess = true;
+            var info = new DirectoryInfo(SelectedFolderPath);
+            var root = await Task.Run(() => SystemFile.GetSystemFileAsync(info));
+            RootDirectory = root;
+            _inProcess = false;
+        }
+        private bool CanExecute(object parameter) {
+            return !string.IsNullOrEmpty(_selectedFolderPath) && !_inProcess;
         }
         #endregion
 
