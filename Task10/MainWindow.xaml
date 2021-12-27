@@ -22,8 +22,8 @@
         </StackPanel>
 
 
-        <ProgressBar Height="20" Grid.Row="1" 
-                     IsIndeterminate="True" IsEnabled="False"/>
+        <ProgressBar Height="20" Grid.Row="1" Name="ProgressBar"
+                     IsIndeterminate="{Binding InProgress}" IsEnabled="{Binding InProgress}"/>
 
         <TreeView Grid.Row="2" DataContext="{Binding Path=RootDirectory, UpdateSourceTrigger=PropertyChanged}"
                   ItemsSource="{Binding NestedItems}">

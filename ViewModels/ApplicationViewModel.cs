@@ -11,16 +11,17 @@ namespace ViewModels {
     public class ApplicationViewModel : INotifyPropertyChanged {
         private SystemFile _rootDirectory;
         private string _selectedFolderPath;
-        private bool _inProcess = false;
+        private bool _inProgress = false;
 
+        #region Properties
         public string SelectedFolderPath {
             get {
                 return _selectedFolderPath;
-            } 
+            }
             set {
                 _selectedFolderPath = value;
                 OnPropertyChanged("SelectedFolderPath");
-            } 
+            }
         }
 
         public SystemFile RootDirectory {
@@ -32,6 +33,17 @@ namespace ViewModels {
                 OnPropertyChanged("RootDirectory");
             }
         }
+        public bool InProgress {
+            get {
+                return _inProgress;
+            }
+            set {
+                _inProgress = value;
+                OnPropertyChanged("InProgress");
+            }
+        }
+        #endregion
+
 
         #region Commands
         private ICommand _selectFolderCommand;
@@ -55,14 +67,14 @@ namespace ViewModels {
         }
 
         private async Task GetFilesCommandAsync() {
-            _inProcess = true;
+            InProgress = true;
             var info = new DirectoryInfo(SelectedFolderPath);
             var root = await Task.Run(() => SystemFile.GetSystemFileAsync(info));
             RootDirectory = root;
-            _inProcess = false;
+            InProgress = false;
         }
         private bool CanExecute(object parameter) {
-            return !string.IsNullOrEmpty(_selectedFolderPath) && !_inProcess;
+            return !string.IsNullOrEmpty(_selectedFolderPath) && !_inProgress;
         }
         #endregion
 
