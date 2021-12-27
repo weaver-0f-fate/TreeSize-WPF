@@ -21,29 +21,41 @@ namespace Models {
 
         public static async Task<SystemFile> GetSystemFile(FileSystemInfo fileInfo) {
 
-            if (fileInfo is DirectoryInfo directoryInfo) {
-                var list = new ObservableCollection<SystemFile>();
-                double size = 0;
+            try {
+                if (fileInfo is DirectoryInfo directoryInfo) {
+                    var list = new ObservableCollection<SystemFile>();
+                    double size = 0;
 
 
-                foreach (var directory in directoryInfo.GetDirectories()) {
-                    var dir = await GetSystemFile(directory);
-                    size += dir.Size.Amount;
-                    list.Add(dir);
+                    foreach (var directory in directoryInfo.GetDirectories()) {
+                        try {
+                            var dir = await GetSystemFile(directory);
+                            size += dir.Size.Amount;
+                            list.Add(dir);
+                        }
+                        catch {
+
+                        }
+                    }
+
+
+                    foreach (var systemFile in directoryInfo.GetFiles()) {
+                        var file = await GetSystemFile(systemFile);
+                        size += file.Size.Amount;
+                        list.Add(file);
+                    }
+                    return new SystemFile(fileInfo.Name, size, Enums.FileType.Folder, list);
                 }
-                
 
-                foreach (var systemFile in directoryInfo.GetFiles()) {
-                    var file = await GetSystemFile(systemFile);
-                    size += file.Size.Amount;
-                    list.Add(file);
+                if (fileInfo is FileInfo f) {
+                    return new SystemFile(f.Name, f.Length, Enums.FileType.File, new ObservableCollection<SystemFile>());
                 }
-                return new SystemFile(fileInfo.Name, size, Enums.FileType.Folder, list);
             }
+            catch {
+
+            }
+
             
-            if (fileInfo is FileInfo f) {
-                return new SystemFile(f.Name, f.Length, Enums.FileType.File, new ObservableCollection<SystemFile>());
-            }
             throw new Exception();
         }
     }
