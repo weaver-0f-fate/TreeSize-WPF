@@ -19,6 +19,9 @@ namespace ViewModels {
         public static async Task<SystemFileViewModel> GetSystemFileViewModelAsync(FileSystemInfo fileInfo) {
             var systemFile = new SystemFile(fileInfo);
 
+            if (fileInfo is FileInfo info) {
+                return new SystemFileViewModel(systemFile, info.Length);
+            }
             if (fileInfo is DirectoryInfo directoryInfo) {
                 var list = new ObservableCollection<SystemFileViewModel>();
                 double size = 0;
@@ -29,8 +32,11 @@ namespace ViewModels {
                         size += dir.Root.Size.Amount;
                         list.Add(dir);
                     }
-                    catch (Exception) {
+                    catch (UnauthorizedAccessException) {
                         list.Add(new SystemFileViewModel(systemFile));
+                    }
+                    catch (Exception) {
+
                     }
                 }
 
@@ -42,10 +48,6 @@ namespace ViewModels {
 
                 }
                 return new SystemFileViewModel(systemFile, size, list);
-            }
-
-            if (fileInfo is FileInfo f) {
-                return new SystemFileViewModel(systemFile, f.Length);
             }
 
             throw new Exception();
