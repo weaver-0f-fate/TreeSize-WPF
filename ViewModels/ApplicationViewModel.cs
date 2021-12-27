@@ -50,12 +50,13 @@ namespace ViewModels {
         public ICommand SelectFolderCommand {
             get {
                 return _selectFolderCommand ??= new RelayCommand(x => {
-                        using var folderDialog = new FolderBrowserDialog();
+                    using (var folderDialog = new FolderBrowserDialog()) {
                         var result = folderDialog.ShowDialog();
                         if (result == DialogResult.OK) {
                             SelectedFolderPath = folderDialog.SelectedPath;
                         }
-                    });
+                    }
+                });
             }
         }
 
@@ -68,9 +69,9 @@ namespace ViewModels {
 
         private async Task GetFilesCommandAsync() {
             InProgress = true;
+            RootDirectory = null;
             var info = new DirectoryInfo(SelectedFolderPath);
-            var root = await Task.Run(() => SystemFile.GetSystemFileAsync(info));
-            RootDirectory = root;
+            RootDirectory = await Task.Run(() => SystemFile.GetSystemFileAsync(info));
             InProgress = false;
         }
         private bool CanExecute(object parameter) {
