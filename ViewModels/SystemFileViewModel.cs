@@ -1,5 +1,6 @@
 ﻿using Models;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -10,9 +11,25 @@ using System.Windows.Data;
 namespace ViewModels {
     public class SystemFileViewModel : INotifyPropertyChanged {
         private ObservableCollection<SystemFileViewModel> _nestedItems;
+        private SystemFile _root;
 
-        public SystemFile Root { get; set; }
-        public ObservableCollection<SystemFileViewModel> NestedItems { 
+        public SystemFileViewModel(FileSystemInfo fileSystemInfo) {
+            Root = new SystemFile(fileSystemInfo);
+            NestedItems = new ObservableCollection<SystemFileViewModel>();
+            BindingOperations.EnableCollectionSynchronization(NestedItems, new object());
+        }
+
+        #region Properties
+        public SystemFile Root {
+            get {
+                return _root;
+            }
+            set {
+                _root = value;
+                OnPropertyChanged("Root");
+            }
+        }
+        public ObservableCollection<SystemFileViewModel> NestedItems {
             get {
                 return _nestedItems;
             }
@@ -21,43 +38,38 @@ namespace ViewModels {
                 OnPropertyChanged("NestedItems");
             }
         }
+        #endregion
 
-        public SystemFileViewModel(FileSystemInfo fileSystemInfo) {
-            Root = new SystemFile(fileSystemInfo);
-            NestedItems = new ObservableCollection<SystemFileViewModel>();
-            BindingOperations.EnableCollectionSynchronization(NestedItems, new object());
+
+        public async Task LoadFilesAsync() {
+            await LoadFilesAsync(Root.FileSystemInfo as DirectoryInfo);
         }
+        private async Task LoadFilesAsync(DirectoryInfo rootDirectoryInfo) {
 
-   
 
-        public async Task ReadRootDirectory() {
-            var fileSystemInfo = Root.FileSystemInfo;
 
-            if (fileSystemInfo is FileInfo info) {
-                NestedItems.Add(new SystemFileViewModel(info));
-            }
-            if (fileSystemInfo is DirectoryInfo directoryInfo) {
+            foreach (var nestedDirectoryInfo in rootDirectoryInfo.GetDirectories()) {
 
-                foreach (var directory in directoryInfo.GetDirectories()) {
-                    try {
-                        var dir = new SystemFileViewModel(directory);
-                        NestedItems.Add(dir);
-                        await dir.ReadRootDirectory();
-                        Root.Size.Amount += dir.Root.Size.Amount;
-                    }
-                    catch (Exception) {
+                try {
+                    var dir = new SystemFileViewModel(nestedDirectoryInfo);
 
-                    }
+                    await dir.LoadFilesAsync();
+
+                    NestedItems.Add(dir);
+                    
+                    Root.Size.Amount += dir.Root.Size.Amount;
                 }
-
-
-                foreach (var sysFile in directoryInfo.GetFiles()) {
-                    var file = new SystemFileViewModel(sysFile);
-                    file.Root.Size.Amount += sysFile.Length;
-                    Root.Size.Amount += sysFile.Length;
-                    NestedItems.Add(file);
-                }
+                catch (Exception) { }
             }
+
+            foreach (var sysFile in rootDirectoryInfo.GetFiles()) {
+                var file = new SystemFileViewModel(sysFile);
+                Root.Size.Amount += sysFile.Length;
+                NestedItems.Add(file);
+            }
+
+          
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

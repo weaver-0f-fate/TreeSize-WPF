@@ -69,13 +69,15 @@ namespace ViewModels {
 
         private async Task GetFilesCommandAsync() {
             InProgress = true;
+
             RootDirectory = null;
             GC.Collect();
 
-            var info = new DirectoryInfo(SelectedFolderPath);
-            RootDirectory = new SystemFileViewModel(info);
+            var directoryInfo = new DirectoryInfo(SelectedFolderPath);
+            RootDirectory = new SystemFileViewModel(directoryInfo);
 
-            await Task.Run(() => RootDirectory.ReadRootDirectory());
+            await Task.Run(() => RootDirectory.LoadFilesAsync());
+
             InProgress = false;
         }
         private bool CanExecute(object parameter) {
