@@ -26,7 +26,7 @@
                      IsIndeterminate="{Binding InProgress}" IsEnabled="{Binding InProgress}"/>
 
         <TreeView Grid.Row="2" DataContext="{Binding Path=RootDirectory, UpdateSourceTrigger=PropertyChanged}"
-                  ItemsSource="{Binding NestedItems}">
+                  ItemsSource="{Binding NestedItems, UpdateSourceTrigger=PropertyChanged, IsAsync=True}">
 
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Path=NestedItems}">
@@ -35,7 +35,7 @@
                         <TextBlock>
                             <Run Text="{Binding Path=Root.Name}"/>
                             <Run Text=" | "/>
-                            <Run Text="{Binding Path=Root.Size.Text}"/>
+                            <Run Text="{Binding Path=Root.Size.Text, UpdateSourceTrigger=PropertyChanged}"/>
                         </TextBlock>
                     </StackPanel>
                     

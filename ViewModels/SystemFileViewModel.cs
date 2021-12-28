@@ -1,40 +1,49 @@
 ﻿using Models;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace ViewModels {
-    public class SystemFileViewModel {
+    public class SystemFileViewModel : INotifyPropertyChanged {
+        private ObservableCollection<SystemFileViewModel> _nestedItems;
+
         public SystemFile Root { get; set; }
-        public ObservableCollection<SystemFileViewModel> NestedItems { get; set; }
-
-
-        private SystemFileViewModel(SystemFile file, double size = 0, ObservableCollection<SystemFileViewModel> list = null) {
-            file.Size = new Size(size);
-            Root = file;
-            NestedItems = list ?? new ObservableCollection<SystemFileViewModel>();
+        public ObservableCollection<SystemFileViewModel> NestedItems { 
+            get {
+                return _nestedItems;
+            }
+            set {
+                _nestedItems = value;
+                OnPropertyChanged("NestedItems");
+            }
         }
 
-        public static async Task<SystemFileViewModel> GetSystemFileViewModelAsync(FileSystemInfo fileInfo) {
-            
+        public SystemFileViewModel(FileSystemInfo fileSystemInfo) {
+            Root = new SystemFile(fileSystemInfo);
+            NestedItems = new ObservableCollection<SystemFileViewModel>();
+            BindingOperations.EnableCollectionSynchronization(NestedItems, new object());
+        }
 
-            if (fileInfo is FileInfo info) {
-                return new SystemFileViewModel(new SystemFile(fileInfo), info.Length);
+   
+
+        public async Task ReadRootDirectory() {
+            var fileSystemInfo = Root.FileSystemInfo;
+
+            if (fileSystemInfo is FileInfo info) {
+                NestedItems.Add(new SystemFileViewModel(info));
             }
-            if (fileInfo is DirectoryInfo directoryInfo) {
-                var systemFile = new SystemFile(directoryInfo);
-                var list = new ObservableCollection<SystemFileViewModel>();
-                double size = 0;
+            if (fileSystemInfo is DirectoryInfo directoryInfo) {
 
                 foreach (var directory in directoryInfo.GetDirectories()) {
                     try {
-                        var dir = await GetSystemFileViewModelAsync(directory);
-                        size += dir.Root.Size.Amount;
-                        list.Add(dir);
-                    }
-                    catch (UnauthorizedAccessException) {
-                        list.Add(new SystemFileViewModel(new SystemFile(directory)));
+                        var dir = new SystemFileViewModel(directory);
+                        NestedItems.Add(dir);
+                        await dir.ReadRootDirectory();
+                        Root.Size.Amount += dir.Root.Size.Amount;
                     }
                     catch (Exception) {
 
@@ -43,15 +52,19 @@ namespace ViewModels {
 
 
                 foreach (var sysFile in directoryInfo.GetFiles()) {
-                    var file = await GetSystemFileViewModelAsync(sysFile);
-                    size += sysFile.Length;
-                    list.Add(file);
-
+                    var file = new SystemFileViewModel(sysFile);
+                    file.Root.Size.Amount += sysFile.Length;
+                    Root.Size.Amount += sysFile.Length;
+                    NestedItems.Add(file);
                 }
-                return new SystemFileViewModel(systemFile, size, list);
             }
+        }
 
-            throw new Exception();
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string prop = "") {
+            if (PropertyChanged != null) {
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            }
         }
     }
 }
