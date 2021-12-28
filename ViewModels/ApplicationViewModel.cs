@@ -1,5 +1,4 @@
-﻿using Models;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -12,7 +11,7 @@ namespace ViewModels {
     public class ApplicationViewModel : INotifyPropertyChanged {
         private SystemFileViewModel _rootDirectory;
         private string _selectedFolderPath;
-        private bool _inProgress = false;
+        private bool _inProgress;
 
         #region Properties
         public string SelectedFolderPath {

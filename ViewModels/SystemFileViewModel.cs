@@ -17,12 +17,13 @@ namespace ViewModels {
         }
 
         public static async Task<SystemFileViewModel> GetSystemFileViewModelAsync(FileSystemInfo fileInfo) {
-            var systemFile = new SystemFile(fileInfo);
+            
 
             if (fileInfo is FileInfo info) {
-                return new SystemFileViewModel(systemFile, info.Length);
+                return new SystemFileViewModel(new SystemFile(fileInfo), info.Length);
             }
             if (fileInfo is DirectoryInfo directoryInfo) {
+                var systemFile = new SystemFile(directoryInfo);
                 var list = new ObservableCollection<SystemFileViewModel>();
                 double size = 0;
 
