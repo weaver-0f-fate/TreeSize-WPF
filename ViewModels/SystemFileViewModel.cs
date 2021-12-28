@@ -34,7 +34,7 @@ namespace ViewModels {
                         list.Add(dir);
                     }
                     catch (UnauthorizedAccessException) {
-                        list.Add(new SystemFileViewModel(systemFile));
+                        list.Add(new SystemFileViewModel(new SystemFile(directory)));
                     }
                     catch (Exception) {
 
