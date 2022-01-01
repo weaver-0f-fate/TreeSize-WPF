@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace Models {
     public class SystemFile : INotifyPropertyChanged {
         private Size _size;
         private ObservableCollection<SystemFile> _nestedItems;
+        private List<SystemFile> _nestedDirectories;
+        private List<SystemFile> _nestedFiles;
 
         #region Properties
         public Size Size {
@@ -35,6 +35,25 @@ namespace Models {
         }
         public Enums.FileType FileType { get; set; }
         public string Name { get; set; }
+
+        public List<SystemFile> NestedDirectories {
+            get {
+                return _nestedDirectories;
+            }
+            set {
+                _nestedDirectories = value;
+                OnPropertyChanged("NestedDirectories");
+            }
+        }
+        public List<SystemFile> NestedFiles {
+            get {
+                return _nestedFiles;
+            }
+            set {
+                _nestedFiles = value;
+                OnPropertyChanged("NestedFiles");
+            }
+        }
         #endregion
 
         public SystemFile(FileSystemInfo info) {
@@ -47,43 +66,50 @@ namespace Models {
             };
             Size = info is FileInfo f ? new Size(f.Length) : new Size(0);
             NestedItems = new ObservableCollection<SystemFile>();
+            NestedDirectories = new List<SystemFile>();
+            NestedFiles = new List<SystemFile>();
             BindingOperations.EnableCollectionSynchronization(NestedItems, new object());
         }
 
-        public async Task LoadNestedDirectoriesAsync() {
+        public void LoadNestedDirectories() {
             var rootDirectory = FileSystemInfo as DirectoryInfo;
 
-            foreach(var dir in rootDirectory.GetDirectories()) {
+            foreach (var dir in rootDirectory.GetDirectories()) {
                 try {
                     var directory = new SystemFile(dir);
-                    
-                    await Task.Run(() => directory.LoadNestedDirectoriesAsync());
-                    NestedItems.Add(directory);
+                    AddDirectory(directory);
                 }
                 catch (Exception) { }
             }
         }
 
-
-
-        public async Task<double> LoadNestedFiles() {
+        public void LoadNestedFiles() {
             var rootDirectory = FileSystemInfo as DirectoryInfo;
 
-            foreach(var dir in NestedItems) {
+            foreach (var dir in NestedDirectories) {
                 try {
-                  Size.Amount += await Task.Run(() => dir.LoadNestedFiles());
+                    Size.Amount += dir.Size.Amount;
                 }
                 catch (Exception) { }
             }
 
             foreach (var file in rootDirectory.GetFiles()) {
                 var nestedFile = new SystemFile(file);
-                NestedItems.Add(nestedFile);
+                AddFile(nestedFile);
                 Size.Amount += file.Length;
             }
-
-            return Size.Amount;
         }
+
+        private void AddDirectory(SystemFile directory) {
+            NestedDirectories.Add(directory);
+            NestedItems.Add(directory);
+        }
+
+        private void AddFile(SystemFile file) {
+            NestedFiles.Add(file);
+            NestedItems.Add(file);
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "") {
