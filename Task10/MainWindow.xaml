@@ -31,17 +31,17 @@
                     <StackPanel Orientation="Horizontal">
                         <Image Name="Icon" Width="20" Height="20"/>
                         <TextBlock>
-                            <Run Text="{Binding Path=Root.Name}"/>
+                            <Run Text="{Binding Path=Name}"/>
                             <Run Text=" | "/>
-                            <Run Text="{Binding Path=Root.Size.Text, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Run Text="{Binding Path=Size.Text, UpdateSourceTrigger=PropertyChanged}"/>
                         </TextBlock>
                     </StackPanel>
                     
                     <HierarchicalDataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Path=Root.Type}" Value="Folder">
+                        <DataTrigger Binding="{Binding Path=FileType}" Value="Folder">
                             <Setter TargetName="Icon" Property="Source" Value="/Images/folderImage.png"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Path=Root.Type}" Value="File">
+                        <DataTrigger Binding="{Binding Path=FileType}" Value="File">
                             <Setter TargetName="Icon" Property="Source" Value="/Images/fileImage.png"/>
                         </DataTrigger>
                     </HierarchicalDataTemplate.Triggers>

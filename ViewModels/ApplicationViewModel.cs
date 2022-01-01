@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Models;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -9,7 +10,7 @@ using ViewModels.Commands;
 
 namespace ViewModels {
     public class ApplicationViewModel : INotifyPropertyChanged {
-        private SystemFileViewModel _rootDirectory;
+        private SystemFile _rootDirectory;
         private string _selectedFolderPath;
         private bool _inProgress;
 
@@ -23,16 +24,6 @@ namespace ViewModels {
                 OnPropertyChanged("SelectedFolderPath");
             }
         }
-
-        public SystemFileViewModel RootDirectory {
-            get {
-                return _rootDirectory;
-            }
-            set {
-                _rootDirectory = value;
-                OnPropertyChanged("RootDirectory");
-            }
-        }
         public bool InProgress {
             get {
                 return _inProgress;
@@ -40,6 +31,15 @@ namespace ViewModels {
             set {
                 _inProgress = value;
                 OnPropertyChanged("InProgress");
+            }
+        }
+        public SystemFile RootDirectory {
+            get {
+                return _rootDirectory;
+            }
+            set {
+                _rootDirectory = value;
+                OnPropertyChanged("RootDirectory");
             }
         }
         #endregion
@@ -74,9 +74,11 @@ namespace ViewModels {
             GC.Collect();
 
             var directoryInfo = new DirectoryInfo(SelectedFolderPath);
-            RootDirectory = new SystemFileViewModel(directoryInfo);
+            RootDirectory = new SystemFile(directoryInfo);
 
-            await Task.Run(() => RootDirectory.LoadFilesAsync());
+            await Task.Run(() => SystemFile.LoadNestedDirectories(RootDirectory));
+
+            await Task.Run(() => SystemFile.LoadNestedFiles(RootDirectory));
 
             InProgress = false;
         }
