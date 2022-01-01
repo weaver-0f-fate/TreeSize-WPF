@@ -50,15 +50,15 @@ namespace Models {
             BindingOperations.EnableCollectionSynchronization(NestedItems, new object());
         }
 
-        public static async Task LoadNestedDirectories(SystemFile root) {
-            var rootDirectory = root.FileSystemInfo as DirectoryInfo;
+        public async Task LoadNestedDirectoriesAsync() {
+            var rootDirectory = FileSystemInfo as DirectoryInfo;
 
             foreach(var dir in rootDirectory.GetDirectories()) {
                 try {
                     var directory = new SystemFile(dir);
                     
-                    await Task.Run(() => LoadNestedDirectories(directory));
-                    root.NestedItems.Add(directory);
+                    await Task.Run(() => directory.LoadNestedDirectoriesAsync());
+                    NestedItems.Add(directory);
                 }
                 catch (Exception) { }
             }
@@ -66,27 +66,23 @@ namespace Models {
 
 
 
-        public static async Task<double> LoadNestedFiles(SystemFile root) {
-            var rootDirectory = root.FileSystemInfo as DirectoryInfo;
+        public async Task<double> LoadNestedFiles() {
+            var rootDirectory = FileSystemInfo as DirectoryInfo;
 
-            foreach(var dir in root.NestedItems) {
+            foreach(var dir in NestedItems) {
                 try {
-                    root.Size.Amount += await Task.Run(() => LoadNestedFiles(dir));
+                  Size.Amount += await Task.Run(() => dir.LoadNestedFiles());
                 }
                 catch (Exception) { }
             }
 
             foreach (var file in rootDirectory.GetFiles()) {
                 var nestedFile = new SystemFile(file);
-                root.NestedItems.Add(nestedFile);
-                root.Size.Amount += file.Length;
+                NestedItems.Add(nestedFile);
+                Size.Amount += file.Length;
             }
 
-            return root.Size.Amount;
-        }
-
-        private static async Task LoadNested(SystemFile root, SystemFile nested) {
-            
+            return Size.Amount;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
