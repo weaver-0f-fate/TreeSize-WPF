@@ -3,9 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Task10.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
+    <Window.Resources>
+        <local:FileSizeConverter x:Key="fileSizeConverter"/>
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -33,7 +38,7 @@
                         <TextBlock>
                             <Run Text="{Binding Path=Name}"/>
                             <Run Text=" | "/>
-                            <Run Text="{Binding Path=SizeText}"/>
+                            <Run Text="{Binding Path=Size, Converter={StaticResource fileSizeConverter}}"/>
                         </TextBlock>
                     </StackPanel>
                     

@@ -12,7 +12,8 @@ namespace Services {
             rootDirectory.LoadNestedDirectories();
 
             var tasks = rootDirectory.NestedItems.Select(nestedDirectory => ReadDirectoryAsync(rootDirectory, (DirectoryFile)nestedDirectory));
-            try {
+
+            try { 
                 await Task.WhenAll(tasks);
             }
             catch { }

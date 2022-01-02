@@ -48,7 +48,6 @@ namespace ViewModels {
         }
         #endregion
 
-
         #region Commands
         public ICommand SelectFolderCommand {
             get {

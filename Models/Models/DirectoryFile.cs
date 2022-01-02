@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Windows.Data;
 
 namespace Models {
     public class DirectoryFile : AbstractFile {
-        private DirectoryInfo _directoryInfo;
+        private readonly DirectoryInfo _directoryInfo;
+
         public ObservableCollection<AbstractFile> NestedItems { get; set; }
 
         public DirectoryFile(DirectoryInfo info) : base(info) {
