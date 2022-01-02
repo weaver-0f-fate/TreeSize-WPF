@@ -6,23 +6,21 @@ namespace Services {
     public static class ReadAsyncService {
         public static async Task ReadRootDirectoryAsync(DirectoryFile rootDirectory) {
             await ReadDirectoryAsync(rootDirectory);
-            rootDirectory.LoadNestedFiles();
+            rootDirectory .LoadNestedFiles();
         }
         private static async Task ReadDirectoryAsync(DirectoryFile rootDirectory) {
             rootDirectory.LoadNestedDirectories();
-
             var tasks = rootDirectory.NestedItems.Select(nestedDirectory => ReadDirectoryAsync(rootDirectory, (DirectoryFile)nestedDirectory));
+            await Task.WhenAll(tasks);
+        }
 
-            try { 
-                await Task.WhenAll(tasks);
+        private static async Task ReadDirectoryAsync(DirectoryFile rootDir, DirectoryFile dir) {
+            try {
+                await ReadDirectoryAsync(dir);
+                dir.LoadNestedFiles();
+                rootDir.Size += dir.Size;
             }
             catch { }
-            
-        }
-        private static async Task ReadDirectoryAsync(DirectoryFile rootDir, DirectoryFile dir) {
-            await ReadDirectoryAsync(dir);
-            dir.LoadNestedFiles();
-            rootDir.Size += dir.Size;
         }
     }
 }

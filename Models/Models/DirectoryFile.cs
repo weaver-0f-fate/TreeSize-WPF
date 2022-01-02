@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace Models {
     public class DirectoryFile : AbstractFile {
         private readonly DirectoryInfo _directoryInfo;
-
-        public ObservableCollection<AbstractFile> NestedItems { get; set; }
 
         public DirectoryFile(DirectoryInfo info) : base(info) {
             _directoryInfo = info;
