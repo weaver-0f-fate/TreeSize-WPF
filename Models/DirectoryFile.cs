@@ -9,7 +9,6 @@ namespace Models {
     public class DirectoryFile : AbstractFile {
         private DirectoryInfo _directoryInfo;
         public ObservableCollection<AbstractFile> NestedItems { get; set; }
-     
 
         public DirectoryFile(DirectoryInfo info) : base(info) {
             _directoryInfo = info;
@@ -21,8 +20,7 @@ namespace Models {
         public void LoadNestedDirectories() {
             foreach (var dir in _directoryInfo.GetDirectories()) {
                 try {
-                    var directory = new DirectoryFile(dir);
-                    NestedItems.Add(directory);
+                    NestedItems.Add(new DirectoryFile(dir));
                 }
                 catch (Exception) { }
             }
@@ -30,12 +28,8 @@ namespace Models {
 
         public void LoadNestedFiles() {
             foreach (var file in _directoryInfo.GetFiles()) {
-                try {
-                    var nestedFile = new SystemFile(file);
-                    NestedItems.Add(nestedFile);
-                    Size += file.Length;
-                }
-                catch { }
+                NestedItems.Add(new SystemFile(file));
+                Size += file.Length;
             }
         }
     }

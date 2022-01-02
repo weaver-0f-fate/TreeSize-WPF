@@ -18,7 +18,6 @@ namespace Services {
             catch { }
             
         }
-
         private static async Task ReadDirectoryAsync(DirectoryFile rootDir, DirectoryFile dir) {
             await ReadDirectoryAsync(dir);
             dir.LoadNestedFiles();

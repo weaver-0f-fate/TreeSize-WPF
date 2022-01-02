@@ -11,6 +11,9 @@ using ViewModels.Commands;
 
 namespace ViewModels {
     public class ApplicationViewModel : INotifyPropertyChanged {
+        private ICommand _selectFolderCommand;
+        private IAsyncCommand _analyzeFolderCommand;
+
         private DirectoryFile _rootDirectory;
         private string _selectedFolderPath;
         private bool _inProgress;
@@ -47,7 +50,6 @@ namespace ViewModels {
 
 
         #region Commands
-        private ICommand _selectFolderCommand;
         public ICommand SelectFolderCommand {
             get {
                 return _selectFolderCommand ??= new RelayCommand(x => {
@@ -60,8 +62,6 @@ namespace ViewModels {
                 });
             }
         }
-
-        private IAsyncCommand _analyzeFolderCommand;
         public IAsyncCommand AnalyzeFolderCommand {
             get {
                 return _analyzeFolderCommand ??= new BaseAsyncCommand(GetFilesCommandAsync, CanExecute);
@@ -88,7 +88,7 @@ namespace ViewModels {
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "") {
-            if (PropertyChanged != null) {
+            if (PropertyChanged is not null) {
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
             }
         }
