@@ -24,24 +24,24 @@
                      IsIndeterminate="{Binding InProgress}" IsEnabled="{Binding InProgress}"/>
 
         <TreeView Grid.Row="2" DataContext="{Binding Path=RootDirectory}"
-                  ItemsSource="{Binding Path=NestedItems, UpdateSourceTrigger=PropertyChanged, IsAsync=True}">
+                  ItemsSource="{Binding Path=NestedItems, UpdateSourceTrigger=PropertyChanged}">
 
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Path=NestedItems, UpdateSourceTrigger=PropertyChanged, IsAsync=True}">
+                <HierarchicalDataTemplate ItemsSource="{Binding Path=NestedItems, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel Orientation="Horizontal">
                         <Image Name="Icon" Width="20" Height="20"/>
                         <TextBlock>
-                            <Run Text="{Binding Path=Name}"/>
+                            <Run Text="{Binding Path=Name, Mode=OneWay}"/>
                             <Run Text=" | "/>
-                            <Run Text="{Binding Path=Size.Text, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Run Text="{Binding Path=SizeText}"/>
                         </TextBlock>
                     </StackPanel>
                     
                     <HierarchicalDataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Path=FileType}" Value="Directory">
-                            <Setter TargetName="Icon" Property="Source" Value="/Images/folderImage.png"/>
+                        <DataTrigger Binding="{Binding Path=IsDirectory}" Value="true">
+                            <Setter TargetName="Icon" Property="Source" Value="/Images/directoryImage.png"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Path=FileType}" Value="File">
+                        <DataTrigger Binding="{Binding Path=IsDirectory}" Value="false">
                             <Setter TargetName="Icon" Property="Source" Value="/Images/fileImage.png"/>
                         </DataTrigger>
                     </HierarchicalDataTemplate.Triggers>

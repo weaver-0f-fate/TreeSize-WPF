@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <Resource Include="Images\fileImage.png" />
-    <Resource Include="Images\folderImage.png" />
+    <Resource Include="Images\directoryImage.png" />
   </ItemGroup>
 
 </Project>

@@ -8,22 +8,33 @@ using System.Windows.Data;
 
 namespace Models {
     public class SystemFile : INotifyPropertyChanged {
-        private Size _size;
         private DirectoryInfo _directoryInfo;
+        private double _size;
+        private string _sizeText;
 
         #region Properties
-        public Size Size {
+        public ObservableCollection<SystemFile> NestedItems { get; set; }
+        public bool IsDirectory { get; }
+        public string Name { get; }
+
+        public string SizeText { 
+            get {
+                return _sizeText;
+            }
+            set {
+                _sizeText = value;
+                OnPropertyChanged("SizeText");
+            }
+        }
+        public double Size {
             get {
                 return _size;
             }
             set {
                 _size = value;
-                OnPropertyChanged("Size");
-            }
+                SizeText = setText(value);
+            } 
         }
-        public ObservableCollection<SystemFile> NestedItems { get; set; }
-        public Enums.FileType FileType { get; set; }
-        public string Name { get; set; }
         #endregion
 
         public SystemFile(FileSystemInfo info) {
@@ -31,13 +42,10 @@ namespace Models {
 
             if (info is DirectoryInfo dirInfo) {
                 _directoryInfo = dirInfo;
-                FileType = Enums.FileType.Directory;
-            }
-            else {
-                FileType = Enums.FileType.File;
+                IsDirectory = true;
             }
 
-            Size = info is FileInfo f ? new Size(f.Length) : new Size(0);
+            Size = info is FileInfo f ? f.Length : default;
             NestedItems = new ObservableCollection<SystemFile>();
             BindingOperations.EnableCollectionSynchronization(NestedItems, new object());
         }
@@ -54,17 +62,30 @@ namespace Models {
         public void LoadNestedFiles() {
 
             foreach (var dir in NestedItems) {
-                Size.Amount += dir.Size.Amount;
+                Size += dir.Size;
                 
             }
 
             foreach (var file in _directoryInfo.GetFiles()) {
                 var nestedFile = new SystemFile(file);
                 NestedItems.Add(nestedFile);
-                Size.Amount += file.Length;
+                Size += file.Length;
             }
         }
 
+
+        private string setText(double value) {
+            const long GbSize = 1000000000;
+            const int MbSize = 1000000;
+            const int KbSize = 1000;
+
+            return value switch {
+                >= GbSize => $"{Math.Round(value / GbSize, 2)} GB",
+                >= MbSize => $"{Math.Round(value / MbSize, 2)} MB",
+                >= KbSize => $"{Math.Round(value / KbSize, 2)} KB",
+                _ => $"{value} Byte",
+            };
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "") {
