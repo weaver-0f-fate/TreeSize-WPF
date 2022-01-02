@@ -11,7 +11,7 @@ using ViewModels.Commands;
 
 namespace ViewModels {
     public class ApplicationViewModel : INotifyPropertyChanged {
-        private SystemFile _rootDirectory;
+        private DirectoryFile _rootDirectory;
         private string _selectedFolderPath;
         private bool _inProgress;
 
@@ -34,7 +34,7 @@ namespace ViewModels {
                 OnPropertyChanged("InProgress");
             }
         }
-        public SystemFile RootDirectory {
+        public DirectoryFile RootDirectory {
             get {
                 return _rootDirectory;
             }
@@ -74,7 +74,7 @@ namespace ViewModels {
             GC.Collect();
 
             var directoryInfo = new DirectoryInfo(SelectedFolderPath);
-            RootDirectory = new SystemFile(directoryInfo);
+            RootDirectory = new DirectoryFile(directoryInfo);
 
             await Task.Run(() => ReadAsyncService.ReadRootDirectoryAsync(RootDirectory));
 

@@ -1,29 +1,27 @@
 ﻿using Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Services {
     public static class ReadAsyncService {
-        public static async Task ReadRootDirectoryAsync(SystemFile rootDirectory) {
+        public static async Task ReadRootDirectoryAsync(DirectoryFile rootDirectory) {
             await ReadDirectoryAsync(rootDirectory);
-            rootDirectory.LoadNested();
+            rootDirectory.LoadNestedFiles();
         }
-        private static async Task ReadDirectoryAsync(SystemFile directory) {
-            directory.LoadNestedDirectories();
-            var tasks = directory.NestedItems.Select(x => ReadDirectoryAsync(directory, x));
-            
+        private static async Task ReadDirectoryAsync(DirectoryFile rootDirectory) {
+            rootDirectory.LoadNestedDirectories();
+
+            var tasks = rootDirectory.NestedItems.Select(nestedDirectory => ReadDirectoryAsync(rootDirectory, (DirectoryFile)nestedDirectory));
             try {
                 await Task.WhenAll(tasks);
             }
             catch { }
+            
         }
 
-        private static async Task ReadDirectoryAsync(SystemFile rootDir, SystemFile dir) {
+        private static async Task ReadDirectoryAsync(DirectoryFile rootDir, DirectoryFile dir) {
             await ReadDirectoryAsync(dir);
-            dir.LoadNested();
+            dir.LoadNestedFiles();
             rootDir.Size += dir.Size;
         }
     }
