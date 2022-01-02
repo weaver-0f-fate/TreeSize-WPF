@@ -8,26 +8,20 @@ using System.Threading.Tasks;
 namespace Services {
     public static class ReadAsyncService {
 
-        public static async Task ReadDirectoriesAsync(SystemFile rootDirectory) {
+        public static async Task ReadRootDirectoryAsync(SystemFile rootDirectory) {
             rootDirectory.LoadNestedDirectories();
-            foreach(var dir in rootDirectory.NestedDirectories) {
-                try {
-                    await ReadDirectoriesAsync(dir);
-                }
-                catch (Exception) {}
-            }
-        }
+            var tasks = new List<Task>();
 
-        public static async Task ReadFilesAsync(SystemFile rootDirectory) {
-         
-            foreach(var dir in rootDirectory.NestedDirectories) {
-                try {
-                    await ReadFilesAsync(dir);
-                }
-                catch (Exception) { }
+            foreach (var dir in rootDirectory.NestedItems) {
+                tasks.Add(ReadRootDirectoryAsync(dir));
             }
+
+            try {
+                await Task.WhenAll(tasks);
+            }
+            catch { }
+
             rootDirectory.LoadNestedFiles();
         }
-
     }
 }

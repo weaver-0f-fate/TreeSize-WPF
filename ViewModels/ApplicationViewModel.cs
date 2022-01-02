@@ -77,11 +77,7 @@ namespace ViewModels {
             var directoryInfo = new DirectoryInfo(SelectedFolderPath);
             RootDirectory = new SystemFile(directoryInfo);
 
-            await Task.Run(() => ReadAsyncService.ReadDirectoriesAsync(RootDirectory));
-            await Task.Run(() => ReadAsyncService.ReadFilesAsync(RootDirectory));
-
-            //await Task.Run(() => RootDirectory.LoadNestedDirectoriesAsync());
-            //await Task.Run(() => RootDirectory.LoadNestedFilesAsync());
+            await Task.Run(() => ReadAsyncService.ReadRootDirectoryAsync(RootDirectory));
 
             InProgress = false;
         }

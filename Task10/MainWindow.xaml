@@ -27,7 +27,7 @@
                   ItemsSource="{Binding Path=NestedItems, UpdateSourceTrigger=PropertyChanged, IsAsync=True}">
 
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Path=NestedItems, UpdateSourceTrigger=PropertyChanged}">
+                <HierarchicalDataTemplate ItemsSource="{Binding Path=NestedItems, UpdateSourceTrigger=PropertyChanged, IsAsync=True}">
                     <StackPanel Orientation="Horizontal">
                         <Image Name="Icon" Width="20" Height="20"/>
                         <TextBlock>
@@ -38,7 +38,7 @@
                     </StackPanel>
                     
                     <HierarchicalDataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Path=FileType}" Value="Folder">
+                        <DataTrigger Binding="{Binding Path=FileType}" Value="Directory">
                             <Setter TargetName="Icon" Property="Source" Value="/Images/folderImage.png"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Path=FileType}" Value="File">
