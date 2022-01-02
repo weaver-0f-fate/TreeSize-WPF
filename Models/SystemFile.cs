@@ -16,7 +16,6 @@ namespace Models {
         public ObservableCollection<SystemFile> NestedItems { get; set; }
         public bool IsDirectory { get; }
         public string Name { get; }
-
         public string SizeText { 
             get {
                 return _sizeText;
@@ -43,11 +42,12 @@ namespace Models {
             if (info is DirectoryInfo dirInfo) {
                 _directoryInfo = dirInfo;
                 IsDirectory = true;
+                NestedItems = new ObservableCollection<SystemFile>();
+                BindingOperations.EnableCollectionSynchronization(NestedItems, new object());
             }
 
             Size = info is FileInfo f ? f.Length : default;
-            NestedItems = new ObservableCollection<SystemFile>();
-            BindingOperations.EnableCollectionSynchronization(NestedItems, new object());
+            
         }
 
         public void LoadNestedDirectories() {
@@ -60,16 +60,31 @@ namespace Models {
             }
         }
         public void LoadNestedFiles() {
-
             foreach (var dir in NestedItems) {
-                Size += dir.Size;
-                
+                try {
+                    Size += dir.Size;
+                }
+                catch { }
             }
 
             foreach (var file in _directoryInfo.GetFiles()) {
-                var nestedFile = new SystemFile(file);
-                NestedItems.Add(nestedFile);
-                Size += file.Length;
+                try {
+                    var nestedFile = new SystemFile(file);
+                    NestedItems.Add(nestedFile);
+                    Size += file.Length;
+                }
+                catch { }
+            }
+        }
+
+        public void LoadNested() {
+            foreach (var file in _directoryInfo.GetFiles()) {
+                try {
+                    var nestedFile = new SystemFile(file);
+                    NestedItems.Add(nestedFile);
+                    Size += file.Length;
+                }
+                catch { }
             }
         }
 

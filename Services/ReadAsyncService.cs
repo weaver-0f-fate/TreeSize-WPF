@@ -7,21 +7,24 @@ using System.Threading.Tasks;
 
 namespace Services {
     public static class ReadAsyncService {
-
         public static async Task ReadRootDirectoryAsync(SystemFile rootDirectory) {
-            rootDirectory.LoadNestedDirectories();
-            var tasks = new List<Task>();
-
-            foreach (var dir in rootDirectory.NestedItems) {
-                tasks.Add(ReadRootDirectoryAsync(dir));
-            }
-
+            await ReadDirectoryAsync(rootDirectory);
+            rootDirectory.LoadNested();
+        }
+        private static async Task ReadDirectoryAsync(SystemFile directory) {
+            directory.LoadNestedDirectories();
+            var tasks = directory.NestedItems.Select(x => ReadDirectoryAsync(directory, x));
+            
             try {
                 await Task.WhenAll(tasks);
             }
             catch { }
+        }
 
-            rootDirectory.LoadNestedFiles();
+        private static async Task ReadDirectoryAsync(SystemFile rootDir, SystemFile dir) {
+            await ReadDirectoryAsync(dir);
+            dir.LoadNested();
+            rootDir.Size += dir.Size;
         }
     }
 }

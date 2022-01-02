@@ -67,7 +67,6 @@ namespace ViewModels {
                 return _analyzeFolderCommand ??= new BaseAsyncCommand(GetFilesCommandAsync, CanExecute);
             }
         }
-
         private async Task GetFilesCommandAsync() {
             InProgress = true;
 
