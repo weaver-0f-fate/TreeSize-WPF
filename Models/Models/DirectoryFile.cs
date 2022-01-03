@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Data;
 
@@ -19,7 +18,7 @@ namespace Models {
                 try {
                     NestedItems.Add(new DirectoryFile(dir));
                 }
-                catch (Exception) { }
+                catch { }
             }
         }
 

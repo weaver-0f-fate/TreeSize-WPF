@@ -13,7 +13,6 @@ namespace ViewModels {
     public class ApplicationViewModel : INotifyPropertyChanged {
         private ICommand _selectFolderCommand;
         private IAsyncCommand _analyzeFolderCommand;
-
         private DirectoryFile _rootDirectory;
         private string _selectedFolderPath;
         private bool _inProgress;
@@ -37,6 +36,7 @@ namespace ViewModels {
                 OnPropertyChanged("InProgress");
             }
         }
+
         public DirectoryFile RootDirectory {
             get {
                 return _rootDirectory;
@@ -75,12 +75,12 @@ namespace ViewModels {
             var directoryInfo = new DirectoryInfo(SelectedFolderPath);
             RootDirectory = new DirectoryFile(directoryInfo);
 
-            await Task.Run(() => ReadAsyncService.ReadRootDirectoryAsync(RootDirectory));
+            await Task.Run(() => ReadDirectoryService.ReadRootDirectory(RootDirectory));
 
             InProgress = false;
         }
         private bool CanExecute(object parameter) {
-            return !string.IsNullOrEmpty(_selectedFolderPath) && !_inProgress;
+            return !string.IsNullOrEmpty(SelectedFolderPath) && !InProgress;
         }
         #endregion
 

@@ -7,7 +7,7 @@ namespace Models {
     public abstract class AbstractFile : INotifyPropertyChanged {
         private double _size;
 
-        #region Properties
+       
         public string Name { get; set; }
         public bool IsDirectory { get; set; }
         public ObservableCollection<AbstractFile> NestedItems { get; set; }
@@ -20,7 +20,6 @@ namespace Models {
                 OnPropertyChanged("Size");
             }
         }
-        #endregion 
 
         public AbstractFile(FileSystemInfo info) {
             Name = info.Name;
