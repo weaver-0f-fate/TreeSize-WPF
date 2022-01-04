@@ -9,11 +9,14 @@ namespace Task10.Converters {
             const long GbSize = 1000000000;
             const int MbSize = 1000000;
             const int KbSize = 1000;
+            const int NumbersAfterComma = 2;
 
-            return (double)value switch {
-                >= GbSize => $"{Math.Round((double)value / GbSize, 2)} GB",
-                >= MbSize => $"{Math.Round((double)value / MbSize, 2)} MB",
-                >= KbSize => $"{Math.Round((double)value / KbSize, 2)} KB",
+            double val = (double)value;
+
+            return val switch {
+                >= GbSize => $"{Math.Round(val / GbSize, NumbersAfterComma)} GB",
+                >= MbSize => $"{Math.Round(val / MbSize, NumbersAfterComma)} MB",
+                >= KbSize => $"{Math.Round(val / KbSize, NumbersAfterComma)} KB",
                 _ => $"{value} Byte",
             };
         }

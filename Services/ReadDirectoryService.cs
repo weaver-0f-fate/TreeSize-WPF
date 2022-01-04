@@ -7,6 +7,7 @@ namespace Services {
             ReadDirectory(rootDirectory);
             rootDirectory.LoadNestedFiles();
         }
+
         private static void ReadDirectory(DirectoryFile directory) {
             directory.LoadNestedDirectories();
 

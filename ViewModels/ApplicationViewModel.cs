@@ -17,6 +17,18 @@ namespace ViewModels {
         private string _selectedFolderPath;
         private bool _inProgress;
 
+        public ApplicationViewModel() {
+            _analyzeFolderCommand ??= new BaseAsyncCommand(GetFilesCommandAsync, CanExecute);
+            _selectFolderCommand ??= new RelayCommand(x => {
+                using (var folderDialog = new FolderBrowserDialog()) {
+                    var result = folderDialog.ShowDialog();
+                    if (result == DialogResult.OK) {
+                        SelectedFolderPath = folderDialog.SelectedPath;
+                    }
+                }
+            });
+        }
+
         #region Properties
         public string SelectedFolderPath {
             get {
@@ -61,6 +73,7 @@ namespace ViewModels {
                 });
             }
         }
+
         public IAsyncCommand AnalyzeFolderCommand {
             get {
                 return _analyzeFolderCommand ??= new BaseAsyncCommand(GetFilesCommandAsync, CanExecute);
