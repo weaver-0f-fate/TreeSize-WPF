@@ -11,31 +11,31 @@ using ViewModels.Commands;
 
 namespace ViewModels {
     public class ApplicationViewModel : INotifyPropertyChanged {
-        private ICommand _selectFolderCommand;
-        private IAsyncCommand _analyzeFolderCommand;
+        private ICommand _selectDirectoryCommand;
+        private IAsyncCommand _analyzeDirectoryCommand;
         private DirectoryFile _rootDirectory;
-        private string _selectedFolderPath;
+        private string _selectedDirectoryPath;
         private bool _inProgress;
 
         public ApplicationViewModel() {
-            _analyzeFolderCommand ??= new BaseAsyncCommand(GetFilesCommandAsync, CanExecute);
-            _selectFolderCommand ??= new RelayCommand(x => {
+            _analyzeDirectoryCommand ??= new BaseAsyncCommand(GetFilesCommandAsync, CanExecute);
+            _selectDirectoryCommand ??= new RelayCommand(x => {
                 using (var folderDialog = new FolderBrowserDialog()) {
                     var result = folderDialog.ShowDialog();
                     if (result == DialogResult.OK) {
-                        SelectedFolderPath = folderDialog.SelectedPath;
+                        SelectedDirectoryPath = folderDialog.SelectedPath;
                     }
                 }
             });
         }
 
         #region Properties
-        public string SelectedFolderPath {
+        public string SelectedDirectoryPath {
             get {
-                return _selectedFolderPath;
+                return _selectedDirectoryPath;
             }
             set {
-                _selectedFolderPath = value;
+                _selectedDirectoryPath = value;
                 OnPropertyChanged("SelectedFolderPath");
             }
         }
@@ -61,22 +61,22 @@ namespace ViewModels {
         #endregion
 
         #region Commands
-        public ICommand SelectFolderCommand {
+        public ICommand SelectDirectoryCommand {
             get {
-                return _selectFolderCommand ??= new RelayCommand(x => {
+                return _selectDirectoryCommand ??= new RelayCommand(x => {
                     using (var folderDialog = new FolderBrowserDialog()) {
                         var result = folderDialog.ShowDialog();
                         if (result == DialogResult.OK) {
-                            SelectedFolderPath = folderDialog.SelectedPath;
+                            SelectedDirectoryPath = folderDialog.SelectedPath;
                         }
                     }
                 });
             }
         }
 
-        public IAsyncCommand AnalyzeFolderCommand {
+        public IAsyncCommand AnalyzeDirectoryCommand {
             get {
-                return _analyzeFolderCommand ??= new BaseAsyncCommand(GetFilesCommandAsync, CanExecute);
+                return _analyzeDirectoryCommand ??= new BaseAsyncCommand(GetFilesCommandAsync, CanExecute);
             }
         }
         private async Task GetFilesCommandAsync() {
@@ -85,7 +85,7 @@ namespace ViewModels {
             RootDirectory = null;
             GC.Collect();
 
-            var directoryInfo = new DirectoryInfo(SelectedFolderPath);
+            var directoryInfo = new DirectoryInfo(SelectedDirectoryPath);
             RootDirectory = new DirectoryFile(directoryInfo);
 
             await Task.Run(() => ReadDirectoryService.ReadRootDirectory(RootDirectory));
@@ -93,7 +93,7 @@ namespace ViewModels {
             InProgress = false;
         }
         private bool CanExecute(object parameter) {
-            return !string.IsNullOrEmpty(SelectedFolderPath) && !InProgress;
+            return !string.IsNullOrEmpty(SelectedDirectoryPath) && !InProgress;
         }
         #endregion
 
