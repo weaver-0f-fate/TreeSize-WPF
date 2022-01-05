@@ -36,7 +36,7 @@ namespace ViewModels {
             }
             set {
                 _selectedDirectoryPath = value;
-                OnPropertyChanged("SelectedFolderPath");
+                OnPropertyChanged("SelectedDirectoryPath");
             }
         }
         public bool InProgress {
