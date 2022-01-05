@@ -19,9 +19,9 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Content="Analyze" Margin="5" Command="{Binding AnalyzeFolderCommand}"/>
+            <Button Content="Analyze Directory" Margin="5" Command="{Binding AnalyzeDirectoryCommand}"/>
             <Button Content="Select Directory" Margin="5" Command="{Binding SelectDirectoryCommand}"/>
-            <TextBlock Margin="5" Text="{Binding SelectedFolderPath, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock Margin="5" Text="{Binding SelectedDirectoryPath, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
 
