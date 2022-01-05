@@ -20,7 +20,7 @@
 
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <Button Content="Analyze" Margin="5" Command="{Binding AnalyzeFolderCommand}"/>
-            <Button Content="Select Folder" Margin="5" Command="{Binding SelectFolderCommand}"/>
+            <Button Content="Select Directory" Margin="5" Command="{Binding SelectDirectoryCommand}"/>
             <TextBlock Margin="5" Text="{Binding SelectedFolderPath, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
