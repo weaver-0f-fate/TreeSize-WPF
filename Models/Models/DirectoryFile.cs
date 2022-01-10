@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace Models {
@@ -13,7 +15,20 @@ namespace Models {
             BindingOperations.EnableCollectionSynchronization(NestedItems, new object());
         }
 
-        public void ReadRootDirectory() {
+        public async Task ReadRootDirectoryWithMultiThread() {
+            LoadNestedDirectories();
+
+            var tasks = new List<Task>();
+
+            foreach (var item in NestedItems) {
+                tasks.Add(Task.Run(() => ((DirectoryFile)item).ReadRootDirectory()));
+            }
+            await Task.WhenAll(tasks);
+
+            LoadNestedFiles();
+        }
+
+        private void ReadRootDirectory() {
             LoadNestedDirectories();
 
             foreach (DirectoryFile dir in NestedItems) {

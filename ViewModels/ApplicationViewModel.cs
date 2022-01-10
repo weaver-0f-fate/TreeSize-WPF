@@ -1,4 +1,5 @@
 ﻿using Models;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -73,10 +74,11 @@ namespace ViewModels {
             var directoryInfo = new DirectoryInfo(SelectedDirectoryPath);
             RootDirectory = new DirectoryFile(directoryInfo);
 
-            await Task.Run(() => RootDirectory.ReadRootDirectory());
+            await Task.Run(() => RootDirectory.ReadRootDirectoryWithMultiThread());
 
             _inProgress = false;
         }
+
         private bool CanExecute(object parameter) {
             return !string.IsNullOrEmpty(SelectedDirectoryPath) && !_inProgress;
         }
