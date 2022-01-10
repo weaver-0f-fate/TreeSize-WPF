@@ -14,41 +14,38 @@ namespace Models {
         }
 
         public void ReadRootDirectory() {
-            Initialize();
-            foreach (var item in NestedItems) {
-                if (item is DirectoryFile dir) {
-                    dir.ReadRootDirectory();
-                    Size += dir.Size;
-                }
+            LoadNestedDirectories();
+
+            foreach (DirectoryFile dir in NestedItems) {
+                dir.ReadRootDirectory();
+                Size += dir.Size;
             }
+
+            LoadNestedFiles();
         }
 
-        private void Initialize() {
-            try {
-                LoadNestedDirectories();
-                LoadNestedFiles();
-            }
-            catch { }
-        }
+   
 
         private void LoadNestedDirectories() {
-            foreach (var dir in _directoryInfo.GetDirectories()) {
-                try {
-                    addNested(new DirectoryFile(dir));
+            try {
+                foreach (var dir in _directoryInfo.GetDirectories()) {
+                    try {
+                        NestedItems.Add(new DirectoryFile(dir));
+                    }
+                    catch { }
                 }
-                catch { }
             }
+            catch { } 
         }
 
         private void LoadNestedFiles() {
-            foreach (var file in _directoryInfo.GetFiles()) {
-                addNested(new SystemFile(file));
+            try {
+                foreach (var file in _directoryInfo.GetFiles()) {
+                    NestedItems.Add(new SystemFile(file));
+                    Size += file.Length;
+                }
             }
-        }
-
-        private void addNested(AbstractFile file) {
-            NestedItems.Add(file);
-            Size += file.Size;
+            catch {}
         }
     }
 }
