@@ -1,6 +1,4 @@
 ﻿using Models;
-using Services;
-using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -39,15 +37,6 @@ namespace ViewModels {
                 OnPropertyChanged("SelectedDirectoryPath");
             }
         }
-        public bool InProgress {
-            get {
-                return _inProgress;
-            }
-            set {
-                _inProgress = value;
-                OnPropertyChanged("InProgress");
-            }
-        }
 
         public DirectoryFile RootDirectory {
             get {
@@ -80,20 +69,16 @@ namespace ViewModels {
             }
         }
         private async Task GetFilesCommandAsync() {
-            InProgress = true;
-
-            RootDirectory = null;
-            GC.Collect();
-
+            _inProgress = true;
             var directoryInfo = new DirectoryInfo(SelectedDirectoryPath);
             RootDirectory = new DirectoryFile(directoryInfo);
 
-            await Task.Run(() => ReadDirectoryService.ReadRootDirectory(RootDirectory));
+            await Task.Run(() => RootDirectory.ReadRootDirectory());
 
-            InProgress = false;
+            _inProgress = false;
         }
         private bool CanExecute(object parameter) {
-            return !string.IsNullOrEmpty(SelectedDirectoryPath) && !InProgress;
+            return !string.IsNullOrEmpty(SelectedDirectoryPath) && !_inProgress;
         }
         #endregion
 

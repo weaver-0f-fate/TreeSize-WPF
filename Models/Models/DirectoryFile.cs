@@ -13,20 +13,42 @@ namespace Models {
             BindingOperations.EnableCollectionSynchronization(NestedItems, new object());
         }
 
-        public void LoadNestedDirectories() {
+        public void ReadRootDirectory() {
+            Initialize();
+            foreach (var item in NestedItems) {
+                if (item is DirectoryFile dir) {
+                    dir.ReadRootDirectory();
+                    Size += dir.Size;
+                }
+            }
+        }
+
+        private void Initialize() {
+            try {
+                LoadNestedDirectories();
+                LoadNestedFiles();
+            }
+            catch { }
+        }
+
+        private void LoadNestedDirectories() {
             foreach (var dir in _directoryInfo.GetDirectories()) {
                 try {
-                    NestedItems.Add(new DirectoryFile(dir));
+                    addNested(new DirectoryFile(dir));
                 }
                 catch { }
             }
         }
 
-        public void LoadNestedFiles() {
+        private void LoadNestedFiles() {
             foreach (var file in _directoryInfo.GetFiles()) {
-                NestedItems.Add(new SystemFile(file));
-                Size += file.Length;
+                addNested(new SystemFile(file));
             }
+        }
+
+        private void addNested(AbstractFile file) {
+            NestedItems.Add(file);
+            Size += file.Size;
         }
     }
 }
