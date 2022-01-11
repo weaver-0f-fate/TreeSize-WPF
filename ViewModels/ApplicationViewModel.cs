@@ -74,7 +74,7 @@ namespace ViewModels {
             var directoryInfo = new DirectoryInfo(SelectedDirectoryPath);
             RootDirectory = new DirectoryFile(directoryInfo);
 
-            await Task.Run(() => RootDirectory.ReadRootDirectoryWithMultiThread());
+            await Task.Run(() => RootDirectory.ReadRootDirectory());
 
             _inProgress = false;
         }
