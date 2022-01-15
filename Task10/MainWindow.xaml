@@ -3,10 +3,52 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Task10"
+        xmlns:local="clr-namespace:Task10.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
 
+    <Window.Resources>
+        <local:FileSizeConverter x:Key="fileSizeConverter"/>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Content="Analyze Directory" Margin="5" Command="{Binding AnalyzeDirectoryCommand}"/>
+            <Button Content="Select Directory" Margin="5" Command="{Binding SelectDirectoryCommand}"/>
+            <TextBlock Margin="5" Text="{Binding Path=SelectedDirectoryPath, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <TreeView Grid.Row="2" DataContext="{Binding Path=RootDirectory, UpdateSourceTrigger=PropertyChanged}"
+                  ItemsSource="{Binding Path=NestedItems, UpdateSourceTrigger=PropertyChanged}">
+
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Path=NestedItems, UpdateSourceTrigger=PropertyChanged}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Name="Icon" Width="20" Height="20"/>
+                        <TextBlock>
+                            <Run Text="{Binding Path=Name}"/>
+                            <Run Text=" | "/>
+                            <Run Text="{Binding Path=Size, Converter={StaticResource fileSizeConverter}}"/>
+                        </TextBlock>
+                    </StackPanel>
+                    
+                    <HierarchicalDataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsDirectory}" Value="true">
+                            <Setter TargetName="Icon" Property="Source" Value="/Images/directoryImage.png"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=IsDirectory}" Value="false">
+                            <Setter TargetName="Icon" Property="Source" Value="/Images/fileImage.png"/>
+                        </DataTrigger>
+                    </HierarchicalDataTemplate.Triggers>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+            
+        </TreeView>
     </Grid>
 </Window>
